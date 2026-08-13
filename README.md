@@ -140,6 +140,9 @@ sumario-cripto-base/
 ├── dapp/
 │   └── index.html
 │
+├── caixinha/
+│   └── index.html
+│
 └── README.md
 ```
 
