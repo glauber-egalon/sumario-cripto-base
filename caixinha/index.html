@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sumário Cripto — Caixinha na Base</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+
+    <script type="module">
+        import { Attribution } from "https://esm.sh/ox/erc8021";
+        window.Attribution = Attribution;
+    </script>
+</head>
+
+<body>
+
+    <h1>Sumário Cripto — Caixinha na Base</h1>
+
+    <button id="conectar">
+        Conectar carteira
+    </button>
+
+    <p id="status">
+        Carteira não conectada.
+    </p>
+
+    <hr>
+
+    <h2>Depositar ETH</h2>
+
+    <input
+        type="text"
+        id="valor"
+        placeholder="Ex: 0.00001"
+    >
+
+    <button id="depositar">
+        Depositar na Base
+    </button>
+
+    <p id="statusDeposito"></p>
+
+    <script>
+        const botaoConectar = document.querySelector("#conectar");
+        const botaoDepositar = document.querySelector("#depositar");
+
+        const status = document.querySelector("#status");
+        const statusDeposito = document.querySelector("#statusDeposito");
+
+        const contratoEndereco =
+            "0x147cE9b67Bc61E90B1128083a4CE025E2Abcf6B0";
+
+        let provider;
+        let signer;
+
+        botaoConectar.addEventListener("click", async () => {
+            try {
+                if (!window.ethereum) {
+                    status.textContent = "Nenhuma carteira encontrada.";
+                    return;
+                }
+
+                provider = new ethers.BrowserProvider(window.ethereum);
+
+                await provider.send("eth_requestAccounts", []);
+
+                signer = await provider.getSigner();
+
+                const endereco = await signer.getAddress();
+                const network = await provider.getNetwork();
+
+                if (network.chainId !== 8453n) {
+                    status.textContent =
+                        "Troque sua carteira para a rede Base.";
+                    return;
+                }
+
+                status.textContent =
+                    "Carteira conectada: " + endereco;
+
+            } catch (erro) {
+                console.error(erro);
+                status.textContent = "Erro ao conectar carteira.";
+            }
+        });
+
+        botaoDepositar.addEventListener("click", async () => {
+            try {
+                if (!signer) {
+                    statusDeposito.textContent =
+                        "Conecte a carteira primeiro.";
+                    return;
+                }
+
+                const valor = document.querySelector("#valor").value;
+
+                if (!valor || Number(valor) <= 0) {
+                    statusDeposito.textContent =
+                        "Informe um valor válido.";
+                    return;
+                }
+
+                const interfaceContrato = new ethers.Interface([
+                    "function depositar() payable"
+                ]);
+
+                const dados = interfaceContrato.encodeFunctionData(
+                    "depositar"
+                );
+
+                const dataSuffix = window.Attribution.toDataSuffix({
+                    codes: ["bc_qshphqwc"]
+                });
+
+                const transacao = await signer.sendTransaction({
+                    to: contratoEndereco,
+                    value: ethers.parseEther(valor),
+                    data: dados + dataSuffix.slice(2)
+                });
+
+                statusDeposito.textContent =
+                    "Transação enviada. Aguardando confirmação...";
+
+                await transacao.wait();
+
+                statusDeposito.innerHTML =
+                    `Depósito confirmado na Base!<br>
+                    <a href="https://base.blockscout.com/tx/${transacao.hash}"
+                    target="_blank">
+                    Ver transação no Blockscout
+                    </a>`;
+
+            } catch (erro) {
+                console.error(erro);
+                statusDeposito.textContent =
+                    "Erro ou transação cancelada.";
+            }
+        });
+    </script>
+</body>
+</html>
