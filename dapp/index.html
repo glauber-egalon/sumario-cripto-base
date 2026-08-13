@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="base:app_id" content="6a79edec85896ee84333183a" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="base:app_id" content="6a79edec85896ee84333183a" />
+
+    <title>Sumário Cripto — Registros na Base</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .subtitulo {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .conectar {
+            background: #0052ff;
+            color: white;
+        }
+
+        .registro {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .registro h2 {
+            margin-top: 0;
+        }
+
+        .informacao {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Sumário Cripto — Registros na Base</h1>
+
+    <p class="subtitulo">
+        Registros publicados on-chain no contrato SumarioCriptoRegistry.
+    </p>
+
+    <button class="conectar">
+        Conectar carteira
+    </button>
+
+    <p class="status">
+        Carteira não conectada.
+    </p>
+
+    <section id="registros">
+    </section>
+
+    <hr>
+
+    <h2>Registrar novo conteúdo</h2>
+
+    <input
+        type="text"
+        id="titulo"
+        placeholder="Título"
+    >
+
+    <br><br>
+
+    <textarea
+        id="mensagem"
+        placeholder="Mensagem"
+        rows="4"
+        cols="50"
+    ></textarea>
+
+    <br><br>
+
+    <button id="registrar">
+        Registrar na Base
+    </button>
+
+    <p id="statusRegistro"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+
+    <script type="module">
+        import { Attribution } from "https://esm.sh/ox/erc8021";
+        window.Attribution = Attribution;
+    </script>
+
+    <script>
+        const botaoConectar = document.querySelector(".conectar");
+        const status = document.querySelector(".status");
+
+        const provider = new ethers.BrowserProvider(window.ethereum);
+
+        const contratoEndereco = "0x7075Ef1FbCcCA4934E24F129f667bEd1bBCf9a1B";
+
+        const contratoABI = [
+            "function quantidadeRegistros() view returns (uint256)",
+            "function registros(uint256) view returns (string titulo, string mensagem, address autor, uint256 data)",
+            "function registrar(string titulo, string mensagem)"
+        ];
+        
+        const contrato = new ethers.Contract(
+            contratoEndereco,
+            contratoABI,
+            provider
+        );
+
+        botaoConectar.addEventListener("click", async () => {
+
+            if (!window.ethereum) {
+                status.textContent = "Nenhuma carteira encontrada no navegador.";
+                return;
+            }
+
+            try {
+                const contas = await window.ethereum.request({
+                    method: "eth_requestAccounts"
+                });
+
+                const endereco = contas[0];
+
+                const network = await provider.getNetwork();
+
+                status.textContent =
+                    "Carteira conectada: " + endereco +
+                    " | Rede: " + network.name +
+                    " | Chain ID: " + network.chainId;
+
+                //const quantidade = await contrato.quantidadeRegistros();
+
+                const registro = await contrato.registros(0);
+
+                const registrosContainer = document.querySelector("#registros");
+
+                registrosContainer.innerHTML = `
+                    <div class="registro">
+                        <h2>${registro[0]}</h2>
+
+                        <p>${registro[1]}</p>
+
+                        <p class="informacao">
+                            Autor: ${registro[2]}
+                        </p>
+
+                        <p class="informacao">
+                            Data: ${new Date(Number(registro[3]) * 1000).toLocaleString("pt-BR")}
+                        </p>
+                    </div>
+                `;
+
+                console.log("Registro:", registro);
+
+                status.textContent =
+                    "Carteira conectada: " + endereco +
+                    " | Rede: " + network.name +
+                    " | Chain ID: " + network.chainId;
+
+            } catch (erro) {
+                status.textContent = "Conexão cancelada.";
+                console.log(erro);
+            }
+        });
+
+        const botaoRegistrar = document.querySelector("#registrar");
+        const statusRegistro = document.querySelector("#statusRegistro");
+
+        botaoRegistrar.addEventListener("click", async () => {
+            try {
+                const titulo = document.querySelector("#titulo").value;
+                const mensagem = document.querySelector("#mensagem").value;
+
+                if (!titulo || !mensagem) {
+                    statusRegistro.textContent = "Preencha título e mensagem.";
+                    return;
+                }
+
+                const signer = await provider.getSigner();
+
+                const contratoComEscrita = new ethers.Contract(
+                    contratoEndereco,
+                    contratoABI,
+                    signer
+                );
+
+                statusRegistro.textContent = "Confirme a transação na carteira...";
+
+                const dataSuffix = window.Attribution.toDataSuffix({
+                    codes: ["bc_qshphqwc"]
+                });
+
+                const dados = contratoComEscrita.interface.encodeFunctionData(
+                    "registrar",
+                    [titulo, mensagem]
+                );
+
+                const transacao = await signer.sendTransaction({
+                    to: contratoEndereco,
+                    data: dados + dataSuffix.slice(2)
+                });
+
+                statusRegistro.textContent =
+                    "Transação enviada. Aguardando confirmação...";
+
+                await transacao.wait();
+
+                statusRegistro.textContent =
+                    "Registro confirmado na Base!";
+
+            } catch (erro) {
+                console.error(erro);
+                statusRegistro.textContent =
+                    "Transação cancelada ou ocorreu um erro.";
+            }
+        });
+    </script>
+
+</body>
+</html>
