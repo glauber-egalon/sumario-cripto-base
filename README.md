@@ -77,7 +77,7 @@ Coleção **ERC-721** criada na Base utilizando OpenZeppelin.
 
 ### 5. SumarioCriptoCaixinha
 
-Smart contract capaz de receber ETH e registrar pagamentos on-chain.
+Smart contract para receber ETH, registrar depósitos e permitir saque pelo dono do contrato.
 
 Cada depósito registra:
 
@@ -85,8 +85,15 @@ Cada depósito registra:
 - valor enviado
 - timestamp
 
+A versão atual também possui:
+
+- definição de `dono`
+- função de saque restrita ao dono
+- interface própria para depósitos
+- atribuição ERC-8021 via Builder Code
+
 **Contract:**  
-`0xaE14Fce798f038402A8BCefc2966624369eF062E`
+`0x147cE9b67Bc61E90B1128083a4CE025E2Abcf6B0`
 
 ---
 
