@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sumário Cripto — Caixinha USDC</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+
+    <script type="module">
+        import { Attribution } from "https://esm.sh/ox/erc8021";
+        window.Attribution = Attribution;
+    </script>
+</head>
+
+<body>
+
+    <h1>Sumário Cripto — Caixinha USDC</h1>
+
+    <button id="conectar">Conectar carteira</button>
+
+    <p id="status">
+        Carteira não conectada.
+    </p>
+
+    <hr>
+
+    <h2>Depositar USDC</h2>
+
+    <input
+        type="text"
+        id="valor"
+        placeholder="Ex: 0.10"
+    >
+
+    <button id="depositar">
+        Aprovar e depositar USDC
+    </button>
+
+    <p id="statusDeposito"></p>
+
+    <script>
+        const botaoConectar = document.querySelector("#conectar");
+        const botaoDepositar = document.querySelector("#depositar");
+
+        const status = document.querySelector("#status");
+        const statusDeposito = document.querySelector("#statusDeposito");
+
+        const contratoCaixinha =
+            "0xF1c08b93838Dca425b0aC2cdbaF1de660a666D6a";
+
+        const contratoUSDC =
+            "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+
+        const builderCode = "bc_qshphqwc";
+
+        let provider;
+        let signer;
+
+        botaoConectar.addEventListener("click", async () => {
+            try {
+                if (!window.ethereum) {
+                    status.textContent =
+                        "Nenhuma carteira encontrada.";
+                    return;
+                }
+
+                provider = new ethers.BrowserProvider(
+                    window.ethereum
+                );
+
+                await provider.send(
+                    "eth_requestAccounts",
+                    []
+                );
+
+                signer = await provider.getSigner();
+
+                const endereco =
+                    await signer.getAddress();
+
+                const network =
+                    await provider.getNetwork();
+
+                if (network.chainId !== 8453n) {
+                    status.textContent =
+                        "Troque sua carteira para a rede Base.";
+                    return;
+                }
+
+                status.textContent =
+                    "Carteira conectada: " + endereco;
+
+            } catch (erro) {
+                console.error(erro);
+
+                status.textContent =
+                    "Erro ao conectar carteira.";
+            }
+        });
+
+        botaoDepositar.addEventListener("click", async () => {
+            try {
+                if (!signer) {
+                    statusDeposito.textContent =
+                        "Conecte a carteira primeiro.";
+                    return;
+                }
+
+                const valorDigitado =
+                    document.querySelector("#valor").value;
+
+                if (
+                    !valorDigitado ||
+                    Number(valorDigitado) <= 0
+                ) {
+                    statusDeposito.textContent =
+                        "Informe um valor válido.";
+                    return;
+                }
+
+                // USDC possui 6 casas decimais
+                const valorUSDC =
+                    ethers.parseUnits(
+                        valorDigitado,
+                        6
+                    );
+
+                const interfaceUSDC =
+                    new ethers.Interface([
+                        "function approve(address spender, uint256 amount) returns (bool)"
+                    ]);
+
+                const dadosApprove =
+                    interfaceUSDC.encodeFunctionData(
+                        "approve",
+                        [
+                            contratoCaixinha,
+                            valorUSDC
+                        ]
+                    );
+
+                const dataSuffix =
+                    window.Attribution.toDataSuffix({
+                        codes: [builderCode]
+                    });
+
+                statusDeposito.textContent =
+                    "Confirme a aprovação do USDC na carteira...";
+
+                const txApprove =
+                    await signer.sendTransaction({
+                        to: contratoUSDC,
+                        data:
+                            dadosApprove +
+                            dataSuffix.slice(2)
+                    });
+
+                await txApprove.wait();
+
+                statusDeposito.textContent =
+                    "USDC aprovado. Agora confirme o depósito...";
+
+                const interfaceCaixinha =
+                    new ethers.Interface([
+                        "function depositar(uint256 valor)"
+                    ]);
+
+                const dadosDeposito =
+                    interfaceCaixinha.encodeFunctionData(
+                        "depositar",
+                        [valorUSDC]
+                    );
+
+                const txDeposito =
+                    await signer.sendTransaction({
+                        to: contratoCaixinha,
+                        data:
+                            dadosDeposito +
+                            dataSuffix.slice(2)
+                    });
+
+                statusDeposito.textContent =
+                    "Depósito enviado. Aguardando confirmação...";
+
+                await txDeposito.wait();
+
+                statusDeposito.innerHTML =
+                    `Depósito confirmado na Base!<br>
+                    <a
+                        href="https://base.blockscout.com/tx/${txDeposito.hash}"
+                        target="_blank"
+                    >
+                        Ver transação no Blockscout
+                    </a>`;
+
+            } catch (erro) {
+                console.error(erro);
+
+                statusDeposito.textContent =
+                    "Erro ou transação cancelada.";
+            }
+        });
+    </script>
+
+</body>
+</html>
