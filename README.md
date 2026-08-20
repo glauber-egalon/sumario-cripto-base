@@ -100,6 +100,26 @@ https://sumario-cripto-caixinha.vercel.app/
 
 ---
 
+### 6. SumarioCriptoCaixinhaUSDC
+
+Smart contract para receber, registrar e sacar pagamentos em **USDC** na Base.
+
+O fluxo utiliza o padrão ERC-20:
+
+- `approve()` para autorizar o contrato
+- `depositar()` para transferir USDC
+- `sacar()` para devolver USDC ao dono
+- registro do pagador, valor e timestamp
+
+A dApp também utiliza **ERC-8021** com o Builder Code:
+
+`bc_qshphqwc`
+
+**Contract:**  
+`0xF1c08b93838Dca425b0aC2cdbaF1de660a666D6a`
+
+---
+
 ## dApp e ERC-8021
 
 A dApp do Sumário Cripto utiliza `ethers.js` para interação com a Base.
@@ -144,6 +164,9 @@ sumario-cripto-base/
 │   └── index.html
 │
 ├── caixinha/
+│   └── index.html
+│
+├── caixinha-usdc/
 │   └── index.html
 │
 └── README.md
