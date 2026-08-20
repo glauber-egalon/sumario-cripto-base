@@ -118,6 +118,9 @@ A dApp também utiliza **ERC-8021** com o Builder Code:
 **Contract:**  
 `0xF1c08b93838Dca425b0aC2cdbaF1de660a666D6a`
 
+**dApp:**  
+https://sumario-cripto-caixinha-usdc.vercel.app/
+
 ---
 
 ## dApp e ERC-8021
