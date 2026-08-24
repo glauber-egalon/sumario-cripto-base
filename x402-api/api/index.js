@@ -12,6 +12,8 @@ import { createPaywall } from "@x402/paywall";
 import { evmPaywall } from "@x402/paywall/evm";
 
 const app = express();
+app.set("trust proxy", 1);
+
 const PORT = 3000;
 
 const payTo = "0xaa65BD65BdD476d8F3e830e115B7013b07bA9FED";
