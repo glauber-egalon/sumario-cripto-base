@@ -45,6 +45,35 @@ app.get("/", (req, res) => {
   res.send("Sumario Cripto x402 funcionando!");
 });
 
+app.get("/api/cdp-test", async (req, res) => {
+  try {
+    const start = Date.now();
+
+    const response = await fetch(
+      "https://api.cdp.coinbase.com/platform/v2/x402/supported",
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    const text = await response.text();
+
+    res.json({
+      ok: response.ok,
+      status: response.status,
+      timeMs: Date.now() - start,
+      body: text
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: error.message
+    });
+  }
+});
+
 app.use(
   paymentMiddleware(
     routes,
