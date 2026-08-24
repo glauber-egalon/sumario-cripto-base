@@ -8,7 +8,10 @@ import { createCdpFacilitatorClient } from "@coinbase/cdp-sdk/x402";
 import { createPaywall } from "@x402/paywall";
 import { evmPaywall } from "@x402/paywall/evm";
 
-import { declareBuilderCodeExtension, builderCodeResourceServerExtension} from "@x402/extensions/builder-code";
+import {
+  BUILDER_CODE,
+  declareBuilderCodeExtension
+} from "@x402/extensions/builder-code";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -20,8 +23,7 @@ const payTo = "0xaa65BD65BdD476d8F3e830e115B7013b07bA9FED";
 const facilitatorClient = createCdpFacilitatorClient();
 
 const resourceServer = new x402ResourceServer(facilitatorClient)
-  .register("eip155:84532", new ExactEvmScheme())
-  .registerExtension(builderCodeResourceServerExtension);
+  .register("eip155:84532", new ExactEvmScheme());
 
 await resourceServer.initialize();
 
@@ -43,8 +45,7 @@ const routes = {
     },
     description: "Dica cripto do Sumario Cripto",
     extensions: {
-        "builder-code": declareBuilderCodeExtension("bc_qshphqwc")
-      }
+      [BUILDER_CODE]: declareBuilderCodeExtension("bc_qshphqwc")
     }
   }
 };
