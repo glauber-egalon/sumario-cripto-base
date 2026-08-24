@@ -45,6 +45,28 @@ app.get("/", (req, res) => {
   res.send("Sumario Cripto x402 funcionando!");
 });
 
+app.get("/api/cdp-sdk-test", async (req, res) => {
+  try {
+    const facilitator = createCdpFacilitatorClient();
+
+    const start = Date.now();
+
+    const supported = await facilitator.getSupported();
+
+    res.json({
+      ok: true,
+      timeMs: Date.now() - start,
+      supported
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      name: error.name,
+      message: error.message
+    });
+  }
+});
+
 app.get("/api/cdp-test", async (req, res) => {
   try {
     const start = Date.now();
