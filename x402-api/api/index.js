@@ -6,7 +6,7 @@ import {
 } from "@x402/express";
 
 import { ExactEvmScheme } from "@x402/evm/exact/server";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { createCdpFacilitatorClient } from "@coinbase/cdp-sdk/x402";
 
 import { createPaywall } from "@x402/paywall";
 import { evmPaywall } from "@x402/paywall/evm";
@@ -16,9 +16,7 @@ const PORT = 3000;
 
 const payTo = "0xaa65BD65BdD476d8F3e830e115B7013b07bA9FED";
 
-const facilitatorClient = new HTTPFacilitatorClient({
-  url: "https://x402.org/facilitator"
-});
+const facilitatorClient = createCdpFacilitatorClient();
 
 const resourceServer = new x402ResourceServer(facilitatorClient)
   .register("eip155:84532", new ExactEvmScheme());
