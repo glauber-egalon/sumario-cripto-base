@@ -21,6 +21,8 @@ const facilitatorClient = createCdpFacilitatorClient();
 const resourceServer = new x402ResourceServer(facilitatorClient)
   .register("eip155:84532", new ExactEvmScheme());
 
+await resourceServer.initialize();
+
 const paywall = createPaywall()
   .withNetwork(evmPaywall)
   .withConfig({
