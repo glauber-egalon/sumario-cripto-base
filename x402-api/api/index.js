@@ -1,15 +1,14 @@
 import express from "express";
 
-import {
-  paymentMiddleware,
-  x402ResourceServer
-} from "@x402/express";
+import { paymentMiddleware, x402ResourceServer} from "@x402/express";
 
 import { ExactEvmScheme } from "@x402/evm/exact/server";
 import { createCdpFacilitatorClient } from "@coinbase/cdp-sdk/x402";
 
 import { createPaywall } from "@x402/paywall";
 import { evmPaywall } from "@x402/paywall/evm";
+
+import { declareBuilderCodeExtension, builderCodeResourceServerExtension} from "@x402/extensions/builder-code";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -21,7 +20,8 @@ const payTo = "0xaa65BD65BdD476d8F3e830e115B7013b07bA9FED";
 const facilitatorClient = createCdpFacilitatorClient();
 
 const resourceServer = new x402ResourceServer(facilitatorClient)
-  .register("eip155:84532", new ExactEvmScheme());
+  .register("eip155:84532", new ExactEvmScheme())
+  .registerExtension(builderCodeResourceServerExtension);
 
 await resourceServer.initialize();
 
@@ -41,7 +41,11 @@ const routes = {
       network: "eip155:84532",
       payTo
     },
-    description: "Dica cripto do Sumario Cripto"
+    description: "Dica cripto do Sumario Cripto",
+    extensions: {
+        "builder-code": declareBuilderCodeExtension("bc_qshphqwc")
+      }
+    }
   }
 };
 
