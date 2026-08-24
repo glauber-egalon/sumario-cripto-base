@@ -1,6 +1,6 @@
 # Sumário Cripto — Base Builder Projects
 
-Projetos desenvolvidos na **Base Mainnet** com o objetivo de aprender desenvolvimento on-chain e construir aplicações reais utilizando smart contracts.
+Projetos desenvolvidos no ecossistema Base, incluindo aplicações em Base Mainnet e experimentos em Base Sepolia.
 
 ## Builder
 
@@ -123,6 +123,34 @@ https://sumario-cripto-caixinha-usdc.vercel.app/
 
 ---
 
+### 7. SumarioCriptoX402
+
+API experimental construída com o protocolo **x402** para pagamentos por requisição na Base.
+
+O projeto permite proteger um endpoint HTTP e liberar o conteúdo somente após o pagamento em **USDC**.
+
+Atualmente o projeto foi testado na **Base Sepolia**, utilizando:
+
+- protocolo x402
+- pagamento em USDC
+- endpoint protegido
+- paywall com conexão de carteira
+- liberação automática da resposta após o pagamento
+
+**Endpoint de teste:**
+
+`GET /api/crypto-tip`
+
+**Preço atual:**
+
+`0.01 USDC`
+
+Após o pagamento, a API retorna uma resposta em JSON.
+
+O projeto será posteriormente preparado para publicação pública e uso na Base Mainnet.
+
+---
+
 ## dApp e ERC-8021
 
 A dApp do Sumário Cripto utiliza `ethers.js` para interação com a Base.
@@ -149,6 +177,9 @@ Isso permite atribuir ao aplicativo as transações geradas pela interface.
 - JavaScript
 - Vercel
 - GitHub
+- Node.js
+- Express
+- x402
 
 ---
 
@@ -171,6 +202,11 @@ sumario-cripto-base/
 │
 ├── caixinha-usdc/
 │   └── index.html
+│
+├── x402-api/
+│   ├── index.js
+│   ├── package.json
+│   └── package-lock.json
 │
 └── README.md
 ```
