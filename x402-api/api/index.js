@@ -23,7 +23,7 @@ const payTo = "0xaa65BD65BdD476d8F3e830e115B7013b07bA9FED";
 const facilitatorClient = createCdpFacilitatorClient();
 
 const resourceServer = new x402ResourceServer(facilitatorClient)
-  .register("eip155:84532", new ExactEvmScheme());
+  .register("eip155:8453", new ExactEvmScheme())
 
 await resourceServer.initialize();
 
@@ -40,7 +40,7 @@ const routes = {
     accepts: {
       scheme: "exact",
       price: "$0.01",
-      network: "eip155:84532",
+      network: "eip155:8453",
       payTo
     },
     description: "Dica cripto do Sumario Cripto",
