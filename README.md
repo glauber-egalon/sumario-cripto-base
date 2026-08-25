@@ -125,29 +125,45 @@ https://sumario-cripto-caixinha-usdc.vercel.app/
 
 ### 7. SumarioCriptoX402
 
-API experimental construída com o protocolo **x402** para pagamentos por requisição na Base.
+API construída com o protocolo **x402** para pagamentos por requisição na Base.
 
-O projeto permite proteger um endpoint HTTP e liberar o conteúdo somente após o pagamento em **USDC**.
+O projeto protege um endpoint HTTP e libera o conteúdo somente após o pagamento em **USDC**.
 
-Atualmente o projeto foi testado na **Base Sepolia**, utilizando:
+Atualmente o projeto está funcionando em **Base Mainnet**.
 
-- protocolo x402
+### Funcionalidades
+
+- endpoint protegido por pagamento x402
 - pagamento em USDC
-- endpoint protegido
-- paywall com conexão de carteira
-- liberação automática da resposta após o pagamento
+- integração com carteira via paywall
+- liquidação via Coinbase Developer Platform Facilitator
+- liberação automática do conteúdo após o pagamento
+- atribuição on-chain via Builder Code / ERC-8021
+- registro on-chain do serviço através de contrato próprio
 
-**Endpoint de teste:**
+**Endpoint público:**
 
-`GET /api/crypto-tip`
+`https://sumario-cripto-base.vercel.app/api/crypto-tip`
 
 **Preço atual:**
 
 `0.01 USDC`
 
-Após o pagamento, a API retorna uma resposta em JSON.
+**Builder Code:**
 
-O projeto será posteriormente preparado para publicação pública e uso na Base Mainnet.
+`bc_qshphqwc`
+
+**Registry Contract:**
+
+`0xeB6937359ad2d9368F3faAAf6682b30167D86870`
+
+**Deploy transaction:**
+
+`0x0c5ae0c0e8563ece3c2e7472c371acabe92180450d73274dc6fbe3b3fe9220e6`
+
+**Service registration transaction:**
+
+`0x5e8a15db4a0e1a58204ce08d7387c74e0c94e0aa73cb7bb3785ff0c2b4daaf52`
 
 ---
 
@@ -180,6 +196,8 @@ Isso permite atribuir ao aplicativo as transações geradas pela interface.
 - Node.js
 - Express
 - x402
+- Coinbase Developer Platform
+- USDC
 
 ---
 
@@ -192,7 +210,8 @@ sumario-cripto-base/
 │   ├── SumarioCriptoRegistry.sol
 │   ├── SumarioCriptoVoting.sol
 │   ├── SumarioCriptoNFT.sol
-│   └── SumarioCriptoCaixinha.sol
+│   ├── SumarioCriptoCaixinha.sol
+│   └── SumarioCriptoX402Registry.sol
 │
 ├── dapp/
 │   └── index.html
@@ -204,9 +223,11 @@ sumario-cripto-base/
 │   └── index.html
 │
 ├── x402-api/
-│   ├── index.js
+│   ├── api/
+│   │   └── index.js
 │   ├── package.json
-│   └── package-lock.json
+│   ├── package-lock.json
+│   └── vercel.json
 │
 └── README.md
 ```
