@@ -60,7 +60,21 @@ const routes = {
     extensions: {
       [BUILDER_CODE]: declareBuilderCodeExtension("bc_qshphqwc")
     }
+  },
+
+  "GET /api/risk-check": {
+    accepts: {
+      scheme: "exact",
+      price: "$0.01",
+      network: "eip155:8453",
+      payTo
+    },
+    description: "Analise simples de risco cripto",
+    extensions: {
+      [BUILDER_CODE]: declareBuilderCodeExtension("bc_qshphqwc")
+    }
   }
+  
 };
 
 app.get("/", (req, res) => {
@@ -137,6 +151,13 @@ app.get("/api/bitcoin-summary", (req, res) => {
   res.json({
     summary:
       "O Bitcoin continua sendo o principal ativo do mercado cripto. Antes de investir, avalie tendencia, volume, volatilidade e contexto macroeconomico."
+  });
+});
+
+app.get("/api/risk-check", (req, res) => {
+  res.json({
+    risk:
+      "Antes de investir, avalie volatilidade, liquidez, concentracao de holders, historico do projeto e o quanto essa posicao representa da sua carteira."
   });
 });
 
