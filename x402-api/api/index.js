@@ -47,6 +47,19 @@ const routes = {
     extensions: {
       [BUILDER_CODE]: declareBuilderCodeExtension("bc_qshphqwc")
     }
+  },
+
+  "GET /api/bitcoin-summary": {
+    accepts: {
+      scheme: "exact",
+      price: "$0.02",
+      network: "eip155:8453",
+      payTo
+    },
+    description: "Resumo rapido do mercado de Bitcoin",
+    extensions: {
+      [BUILDER_CODE]: declareBuilderCodeExtension("bc_qshphqwc")
+    }
   }
 };
 
@@ -117,6 +130,13 @@ app.use(
 app.get("/api/crypto-tip", (req, res) => {
   res.json({
     tip: "Nunca arrisque capital que você não pode perder."
+  });
+});
+
+app.get("/api/bitcoin-summary", (req, res) => {
+  res.json({
+    summary:
+      "O Bitcoin continua sendo o principal ativo do mercado cripto. Antes de investir, avalie tendencia, volume, volatilidade e contexto macroeconomico."
   });
 });
 
