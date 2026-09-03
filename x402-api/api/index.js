@@ -261,10 +261,234 @@ app.get("/api/bitcoin-summary", async (req, res) => {
 });
 
 app.get("/api/risk-check", (req, res) => {
-  res.json({
-    risk:
-      "Antes de investir, avalie volatilidade, liquidez, concentracao de holders, historico do projeto e o quanto essa posicao representa da sua carteira."
-  });
+  const token = req.query.token || "";
+  const investimento = Number(req.query.investimento || 0);
+  const percentual = Number(req.query.percentual || 0);
+
+  if (!token || !investimento || !percentual) {
+    return res.send(`
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Risk Check</title>
+
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background: #0f1115;
+            color: white;
+            margin: 0;
+            padding: 40px 20px;
+          }
+
+          .container {
+            max-width: 600px;
+            margin: auto;
+          }
+
+          .card {
+            background: #181b22;
+            border: 1px solid #2a2f3a;
+            border-radius: 16px;
+            padding: 30px;
+          }
+
+          input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin: 8px 0 18px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #0f1115;
+            color: white;
+          }
+
+          button {
+            width: 100%;
+            padding: 12px;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+          }
+
+          label {
+            color: #bbb;
+          }
+
+          a {
+            color: white;
+          }
+        </style>
+      </head>
+
+      <body>
+        <div class="container">
+          <div class="card">
+
+            <h1>Risk Check</h1>
+
+            <p>
+              Informe alguns dados para receber uma análise simples
+              do tamanho da posição.
+            </p>
+
+            <form method="GET" action="/api/risk-check">
+
+              <label>Token</label>
+              <input
+                type="text"
+                name="token"
+                placeholder="Ex: BTC, ETH, AERO"
+                required
+              >
+
+              <label>Valor que pretende investir (US$)</label>
+              <input
+                type="number"
+                name="investimento"
+                min="0.01"
+                step="0.01"
+                placeholder="Ex: 500"
+                required
+              >
+
+              <label>Quanto isso representa da sua carteira (%)</label>
+              <input
+                type="number"
+                name="percentual"
+                min="0.1"
+                max="100"
+                step="0.1"
+                placeholder="Ex: 10"
+                required
+              >
+
+              <button type="submit">Analisar risco</button>
+
+            </form>
+
+            <p>
+              <a href="/">← Voltar</a>
+            </p>
+
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
+  }
+
+  let nivel = "Baixo";
+  let mensagem =
+    "O tamanho da posição está relativamente controlado em relação à sua carteira.";
+
+  if (percentual > 10 && percentual <= 25) {
+    nivel = "Médio";
+    mensagem =
+      "A posição já representa uma parcela relevante da carteira. Avalie bem a volatilidade do ativo.";
+  }
+
+  if (percentual > 25) {
+    nivel = "Alto";
+    mensagem =
+      "A posição representa uma parcela muito grande da carteira. Uma queda forte do ativo pode ter impacto significativo no patrimônio.";
+  }
+
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Resultado do Risk Check</title>
+
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #0f1115;
+          color: white;
+          margin: 0;
+          padding: 40px 20px;
+        }
+
+        .container {
+          max-width: 600px;
+          margin: auto;
+        }
+
+        .card {
+          background: #181b22;
+          border: 1px solid #2a2f3a;
+          border-radius: 16px;
+          padding: 30px;
+        }
+
+        .label {
+          color: #aaa;
+          margin-top: 20px;
+        }
+
+        .value {
+          font-size: 26px;
+          font-weight: bold;
+          margin-top: 5px;
+        }
+
+        .message {
+          margin-top: 25px;
+          line-height: 1.6;
+        }
+
+        a {
+          color: white;
+        }
+      </style>
+    </head>
+
+    <body>
+      <div class="container">
+        <div class="card">
+
+          <h1>Risk Check</h1>
+
+          <div class="label">Token</div>
+          <div class="value">${token.toUpperCase()}</div>
+
+          <div class="label">Valor do investimento</div>
+          <div class="value">
+            US$ ${investimento.toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}
+          </div>
+
+          <div class="label">Peso na carteira</div>
+          <div class="value">${percentual}%</div>
+
+          <div class="label">Nível de risco da posição</div>
+          <div class="value">${nivel}</div>
+
+          <div class="message">
+            ${mensagem}
+          </div>
+
+          <p>
+            <a href="/api/risk-check">← Fazer nova análise</a>
+          </p>
+
+          <p>
+            <a href="/">← Voltar ao início</a>
+          </p>
+
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
 });
 
 export default app;
