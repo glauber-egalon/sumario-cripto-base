@@ -147,11 +147,35 @@ app.get("/api/crypto-tip", (req, res) => {
   });
 });
 
-app.get("/api/bitcoin-summary", (req, res) => {
-  res.json({
-    summary:
-      "O Bitcoin continua sendo o principal ativo do mercado cripto. Antes de investir, avalie tendencia, volume, volatilidade e contexto macroeconomico."
-  });
+app.get("/api/bitcoin-summary", async (req, res) => {
+  try {
+    const response = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true"
+    );
+
+    const data = await response.json();
+
+    const price = data.bitcoin.usd;
+    const change24h = data.bitcoin.usd_24h_change;
+
+    let sentiment = "neutro";
+
+    if (change24h > 2) sentiment = "positivo";
+    if (change24h < -2) sentiment = "negativo";
+
+    res.json({
+      bitcoin_price_usd: price,
+      change_24h: `${change24h.toFixed(2)}%`,
+      market_sentiment: sentiment,
+      summary:
+        `Bitcoin está em US$ ${price.toLocaleString("en-US")} e varia ${change24h.toFixed(2)}% nas últimas 24 horas. O movimento de curto prazo está ${sentiment}.`
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      error: "Nao foi possivel obter os dados do Bitcoin."
+    });
+  }
 });
 
 app.get("/api/risk-check", (req, res) => {
