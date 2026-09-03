@@ -158,23 +158,105 @@ app.get("/api/bitcoin-summary", async (req, res) => {
     const price = data.bitcoin.usd;
     const change24h = data.bitcoin.usd_24h_change;
 
-    let sentiment = "neutro";
+    let sentiment = "Neutro";
 
-    if (change24h > 2) sentiment = "positivo";
-    if (change24h < -2) sentiment = "negativo";
+    if (change24h > 2) sentiment = "Positivo";
+    if (change24h < -2) sentiment = "Negativo";
 
-    res.json({
-      bitcoin_price_usd: price,
-      change_24h: `${change24h.toFixed(2)}%`,
-      market_sentiment: sentiment,
-      summary:
-        `Bitcoin está em US$ ${price.toLocaleString("en-US")} e varia ${change24h.toFixed(2)}% nas últimas 24 horas. O movimento de curto prazo está ${sentiment}.`
+    const formattedPrice = price.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "USD"
     });
+
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bitcoin Market Summary</title>
+
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background: #0f1115;
+            color: white;
+            margin: 0;
+            padding: 40px 20px;
+          }
+
+          .container {
+            max-width: 600px;
+            margin: auto;
+          }
+
+          .card {
+            background: #181b22;
+            border: 1px solid #2a2f3a;
+            border-radius: 16px;
+            padding: 30px;
+          }
+
+          h1 {
+            margin-top: 0;
+          }
+
+          .label {
+            color: #aaa;
+            margin-top: 25px;
+          }
+
+          .value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 5px;
+          }
+
+          .summary {
+            line-height: 1.6;
+            margin-top: 25px;
+          }
+
+          a {
+            display: inline-block;
+            margin-top: 25px;
+            color: white;
+            text-decoration: none;
+          }
+        </style>
+      </head>
+
+      <body>
+        <div class="container">
+          <div class="card">
+
+            <h1>Bitcoin Market Summary</h1>
+
+            <div class="label">Preço atual</div>
+            <div class="value">${formattedPrice}</div>
+
+            <div class="label">Variação em 24h</div>
+            <div class="value">${change24h.toFixed(2)}%</div>
+
+            <div class="label">Sentimento</div>
+            <div class="value">${sentiment}</div>
+
+            <div class="summary">
+              O Bitcoin está cotado a ${formattedPrice} e apresenta
+              variação de ${change24h.toFixed(2)}% nas últimas 24 horas.
+              O movimento de curto prazo está ${sentiment.toLowerCase()}.
+            </div>
+
+            <a href="/">← Voltar</a>
+
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
 
   } catch (error) {
-    res.status(500).json({
-      error: "Nao foi possivel obter os dados do Bitcoin."
-    });
+    res.status(500).send("Não foi possível obter os dados do Bitcoin.");
   }
 });
 
