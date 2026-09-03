@@ -373,20 +373,64 @@ app.get("/api/risk-check", (req, res) => {
   const investimento = Number(req.query.investimento || 0);
   const percentual = Number(req.query.percentual || 0);
 
-  let nivel = "Baixo";
-  let mensagem =
-    "O tamanho da posição está relativamente controlado em relação à sua carteira.";
-
-  if (percentual > 10 && percentual <= 25) {
-    nivel = "Médio";
-    mensagem =
-      "A posição já representa uma parcela relevante da carteira. Avalie bem a volatilidade do ativo.";
+  const tokenUpper = token.toUpperCase();
+  
+  const baixoRiscoBase = ["BTC", "ETH"];
+  const medioRiscoBase = ["SOL", "BNB", "XRP", "LINK", "AAVE"];
+  
+  let riscoAtivo = "alto";
+  
+  if (baixoRiscoBase.includes(tokenUpper)) {
+    riscoAtivo = "baixo";
+  } else if (medioRiscoBase.includes(tokenUpper)) {
+    riscoAtivo = "medio";
   }
-
-  if (percentual > 25) {
-    nivel = "Alto";
-    mensagem =
-      "A posição representa uma parcela grande da carteira e pode causar impacto significativo em caso de queda.";
+  
+  let nivel = "Baixo";
+  let mensagem = "";
+  
+  if (riscoAtivo === "baixo") {
+    if (percentual <= 15) {
+      nivel = "Baixo";
+      mensagem =
+        "O ativo possui risco relativo menor dentro do mercado cripto e o tamanho da posição está controlado.";
+    } else if (percentual <= 30) {
+      nivel = "Médio";
+      mensagem =
+        "Mesmo em ativos mais consolidados, uma posição grande aumenta bastante o risco da carteira.";
+    } else {
+      nivel = "Alto";
+      mensagem =
+        "A concentração está muito alta. Mesmo BTC ou ETH podem sofrer quedas relevantes.";
+    }
+  }
+  
+  if (riscoAtivo === "medio") {
+    if (percentual <= 5) {
+      nivel = "Baixo";
+      mensagem =
+        "A exposição está pequena, embora o ativo tenha volatilidade maior que BTC e ETH.";
+    } else if (percentual <= 15) {
+      nivel = "Médio";
+      mensagem =
+        "A posição já representa uma exposição relevante a um ativo de maior volatilidade.";
+    } else {
+      nivel = "Alto";
+      mensagem =
+        "A combinação de alta exposição com maior volatilidade torna essa posição arriscada.";
+    }
+  }
+  
+  if (riscoAtivo === "alto") {
+    if (percentual <= 3) {
+      nivel = "Médio";
+      mensagem =
+        "O ativo é tratado como especulativo. A exposição pequena reduz o impacto potencial na carteira.";
+    } else {
+      nivel = "Alto";
+      mensagem =
+        "O ativo é tratado como especulativo e a posição representa uma parcela relevante da carteira.";
+    }
   }
 
   res.send(`
