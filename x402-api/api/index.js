@@ -240,6 +240,93 @@ app.get("/risk-check-form", (req, res) => {
   `);
 });
 
+app.get("/crypto-tip-form", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Crypto Tip</title>
+
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #0f1115;
+          color: white;
+          margin: 0;
+          padding: 40px 20px;
+        }
+
+        .card {
+          max-width: 550px;
+          margin: auto;
+          background: #181b22;
+          border: 1px solid #2a2f3a;
+          border-radius: 16px;
+          padding: 30px;
+        }
+
+        select {
+          width: 100%;
+          padding: 12px;
+          margin: 10px 0 20px;
+          border-radius: 8px;
+          background: #0f1115;
+          color: white;
+          border: 1px solid #333;
+        }
+
+        button {
+          width: 100%;
+          padding: 12px;
+          border: 0;
+          border-radius: 8px;
+          font-weight: bold;
+          cursor: pointer;
+        }
+
+        a {
+          color: white;
+        }
+      </style>
+    </head>
+
+    <body>
+      <div class="card">
+
+        <h1>Crypto Tip</h1>
+
+        <p>Escolha uma categoria:</p>
+
+        <form method="GET" action="/api/crypto-tip">
+
+          <select name="categoria" required>
+            <option value="">Selecione</option>
+            <option value="seguranca">Segurança</option>
+            <option value="defi">DeFi</option>
+            <option value="airdrops">Airdrops</option>
+            <option value="memecoins">Memecoins</option>
+            <option value="risco">Gestão de risco</option>
+            <option value="mercado">Mercado</option>
+          </select>
+
+          <button type="submit">
+            Receber dica por US$0,01
+          </button>
+
+        </form>
+
+        <p>
+          <a href="/">← Voltar</a>
+        </p>
+
+      </div>
+    </body>
+    </html>
+  `);
+});
+
 app.use(
   paymentMiddleware(
     routes,
