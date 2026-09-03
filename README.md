@@ -270,7 +270,10 @@ sumario-cripto-base/
 │   ├── api/
 │   │   └── index.js
 │   ├── public/
-│   │   └── index.html
+│   │   ├── index.html
+│   │   ├── about.html
+│   │   ├── faq.html
+│   │   └── status.html
 │   ├── package.json
 │   ├── package-lock.json
 │   └── vercel.json
