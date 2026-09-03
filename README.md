@@ -273,4 +273,4 @@ sumario-cripto-base/
 
 ## Objetivo
 
-Este repositório registra minha evolução como builder no ecossistema Base, começando por contratos simples e avançando para dApps, NFTs, sistemas de votação, pagamentos on-chain e novas aplicações.
+Este repositório registra minha evolução como builder no ecossistema Base, começando por contratos simples e avançando para dApps, NFTs, sistemas de votação, pagamentos on-chain, APIs pagas com x402 e aplicações web utilizando USDC na Base.
