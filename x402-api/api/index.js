@@ -250,9 +250,106 @@ app.use(
 );
 
 app.get("/api/crypto-tip", (req, res) => {
-  res.json({
-    tip: "Nunca arrisque capital que você não pode perder."
-  });
+  const tips = [
+    {
+      categoria: "Gestão de risco",
+      dica: "Nunca arrisque capital que você não pode perder."
+    },
+    {
+      categoria: "Segurança",
+      dica: "Nunca assine uma transação sem conferir rede, contrato e permissões."
+    },
+    {
+      categoria: "Carteira",
+      dica: "Evite concentrar uma parcela muito grande da carteira em um único ativo."
+    },
+    {
+      categoria: "DeFi",
+      dica: "Antes de fornecer liquidez, entenda impermanent loss, riscos do protocolo e como retirar os fundos."
+    },
+    {
+      categoria: "Memecoins",
+      dica: "Em memecoins, tamanho de posição importa mais do que convicção."
+    },
+    {
+      categoria: "Airdrops",
+      dica: "Priorize uso real dos protocolos e evite fabricar volume apenas para tentar qualificar uma carteira."
+    },
+    {
+      categoria: "Mercado",
+      dica: "Preço subindo não significa automaticamente boa oportunidade de entrada."
+    },
+    {
+      categoria: "Segurança",
+      dica: "Revise approvals antigas periodicamente, principalmente de tokens que ainda possuem saldo relevante."
+    }
+  ];
+
+  const tip = tips[Math.floor(Math.random() * tips.length)];
+
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Crypto Tip</title>
+
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #0f1115;
+          color: white;
+          margin: 0;
+          padding: 40px 20px;
+        }
+
+        .card {
+          max-width: 550px;
+          margin: auto;
+          background: #181b22;
+          border: 1px solid #2a2f3a;
+          border-radius: 16px;
+          padding: 30px;
+        }
+
+        .categoria {
+          color: #aaa;
+          margin-bottom: 10px;
+        }
+
+        .dica {
+          font-size: 24px;
+          line-height: 1.5;
+        }
+
+        a {
+          color: white;
+        }
+      </style>
+    </head>
+
+    <body>
+      <div class="card">
+
+        <h1>Crypto Tip</h1>
+
+        <div class="categoria">
+          ${tip.categoria}
+        </div>
+
+        <div class="dica">
+          ${tip.dica}
+        </div>
+
+        <p>
+          <a href="/">← Voltar ao início</a>
+        </p>
+
+      </div>
+    </body>
+    </html>
+  `);
 });
 
 app.get("/api/bitcoin-summary", async (req, res) => {
