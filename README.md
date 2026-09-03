@@ -123,31 +123,66 @@ https://sumario-cripto-caixinha-usdc.vercel.app/
 
 ---
 
-### 7. SumarioCriptoX402
+### 7. SumarioCripto PayAPI / x402
 
-API construída com o protocolo **x402** para pagamentos por requisição na Base.
+Aplicação web construída com o protocolo **x402** para pagamentos por requisição em **USDC na Base Mainnet**.
 
-O projeto protege um endpoint HTTP e libera o conteúdo somente após o pagamento em **USDC**.
+O projeto utiliza uma interface web com serviços pagos e endpoints protegidos por x402.
 
-Atualmente o projeto está funcionando em **Base Mainnet**.
+### Serviços disponíveis
+
+#### Crypto Tip — 0.01 USDC
+
+O usuário escolhe uma categoria antes do pagamento:
+
+- Segurança
+- DeFi
+- Airdrops
+- Memecoins
+- Gestão de risco
+- Mercado
+
+Após o pagamento, recebe uma dica relacionada à categoria escolhida.
+
+#### Bitcoin Market Summary — 0.02 USDC
+
+Consulta dados atuais do Bitcoin e apresenta:
+
+- preço atual em USD
+- variação de 24 horas
+- classificação do movimento como positivo, neutro ou negativo
+- resumo simples do mercado
+
+#### Risk Check — 0.01 USDC
+
+O usuário informa:
+
+- token
+- valor que pretende investir
+- percentual que a posição representa da carteira
+
+Após o pagamento, o sistema classifica a posição como:
+
+- Baixo
+- Médio
+- Alto
+
+A análise considera o tipo de ativo e o nível de concentração da posição.
 
 ### Funcionalidades
 
-- endpoint protegido por pagamento x402
-- pagamento em USDC
-- integração com carteira via paywall
-- liquidação via Coinbase Developer Platform Facilitator
-- liberação automática do conteúdo após o pagamento
+- pagamentos por requisição usando x402
+- pagamentos em USDC na Base
+- paywall conectado à carteira
+- Coinbase Developer Platform Facilitator
+- serviços dinâmicos
+- frontend próprio
 - atribuição on-chain via Builder Code / ERC-8021
 - registro on-chain do serviço através de contrato próprio
 
-**Endpoint público:**
+**Aplicação:**
 
-`https://sumario-cripto-base.vercel.app/api/crypto-tip`
-
-**Preço atual:**
-
-`0.01 USDC`
+`https://sumario-cripto-base.vercel.app/`
 
 **Builder Code:**
 
