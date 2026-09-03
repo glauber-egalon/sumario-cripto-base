@@ -236,6 +236,15 @@ Isso permite atribuir ao aplicativo as transações geradas pela interface.
 
 ---
 
+### Páginas públicas
+
+- Aplicação principal: `https://sumario-cripto-base.vercel.app/`
+- Sobre: `https://sumario-cripto-base.vercel.app/about.html`
+- FAQ: `https://sumario-cripto-base.vercel.app/faq.html`
+- Status: `https://sumario-cripto-base.vercel.app/status.html`
+
+---
+
 ## Estrutura do projeto
 
 ```text
