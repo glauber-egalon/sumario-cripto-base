@@ -337,42 +337,49 @@ app.use(
 );
 
 app.get("/api/crypto-tip", (req, res) => {
-  const tips = [
-    {
-      categoria: "Gestão de risco",
-      dica: "Nunca arrisque capital que você não pode perder."
-    },
-    {
-      categoria: "Segurança",
-      dica: "Nunca assine uma transação sem conferir rede, contrato e permissões."
-    },
-    {
-      categoria: "Carteira",
-      dica: "Evite concentrar uma parcela muito grande da carteira em um único ativo."
-    },
-    {
-      categoria: "DeFi",
-      dica: "Antes de fornecer liquidez, entenda impermanent loss, riscos do protocolo e como retirar os fundos."
-    },
-    {
-      categoria: "Memecoins",
-      dica: "Em memecoins, tamanho de posição importa mais do que convicção."
-    },
-    {
-      categoria: "Airdrops",
-      dica: "Priorize uso real dos protocolos e evite fabricar volume apenas para tentar qualificar uma carteira."
-    },
-    {
-      categoria: "Mercado",
-      dica: "Preço subindo não significa automaticamente boa oportunidade de entrada."
-    },
-    {
-      categoria: "Segurança",
-      dica: "Revise approvals antigas periodicamente, principalmente de tokens que ainda possuem saldo relevante."
-    }
-  ];
+  const categoria = req.query.categoria || "mercado";
 
-  const tip = tips[Math.floor(Math.random() * tips.length)];
+  const dicas = {
+    seguranca: [
+      "Nunca assine uma transação sem conferir rede, contrato e permissões.",
+      "Use carteiras separadas para atividades de maior risco.",
+      "Revise approvals antigas periodicamente."
+    ],
+
+    defi: [
+      "Antes de fornecer liquidez, entenda impermanent loss e como retirar os fundos.",
+      "APY alto quase sempre vem acompanhado de risco maior.",
+      "Prefira protocolos com histórico, auditorias e boa liquidez."
+    ],
+
+    airdrops: [
+      "Priorize uso real dos protocolos em vez de fabricar volume.",
+      "Atividade distribuída ao longo do tempo tende a parecer mais orgânica.",
+      "Evite fragmentar sua atividade em muitas carteiras sem necessidade."
+    ],
+
+    memecoins: [
+      "Em memecoins, tamanho da posição importa mais do que convicção.",
+      "Liquidez baixa pode impedir uma saída rápida.",
+      "Evite transformar lucro em prejuízo por não ter um plano de saída."
+    ],
+
+    risco: [
+      "Nunca arrisque capital que você não pode perder.",
+      "Evite concentrar uma parcela muito grande da carteira em um único ativo.",
+      "Defina o tamanho da posição antes de entrar no mercado."
+    ],
+
+    mercado: [
+      "Preço subindo não significa automaticamente boa oportunidade de entrada.",
+      "Observe tendência, volume e contexto macro antes de tomar decisões.",
+      "Evite tomar decisões apenas por FOMO."
+    ]
+  };
+
+  const lista = dicas[categoria] || dicas.mercado;
+
+  const dica = lista[Math.floor(Math.random() * lista.length)];
 
   res.send(`
     <!DOCTYPE html>
@@ -422,12 +429,16 @@ app.get("/api/crypto-tip", (req, res) => {
         <h1>Crypto Tip</h1>
 
         <div class="categoria">
-          ${tip.categoria}
+          ${categoria.toUpperCase()}
         </div>
 
         <div class="dica">
-          ${tip.dica}
+          ${dica}
         </div>
+
+        <p>
+          <a href="/crypto-tip-form">← Escolher outra categoria</a>
+        </p>
 
         <p>
           <a href="/">← Voltar ao início</a>
