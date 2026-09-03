@@ -132,6 +132,67 @@ app.get("/api/cdp-test", async (req, res) => {
   }
 });
 
+app.get("/risk-check-form", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Risk Check</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #0f1115;
+          color: white;
+          padding: 40px 20px;
+        }
+        .card {
+          max-width: 550px;
+          margin: auto;
+          background: #181b22;
+          padding: 30px;
+          border-radius: 16px;
+        }
+        input {
+          width: 100%;
+          box-sizing: border-box;
+          padding: 12px;
+          margin: 8px 0 18px;
+        }
+        button {
+          width: 100%;
+          padding: 12px;
+          font-weight: bold;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <h1>Risk Check</h1>
+
+        <form method="GET" action="/api/risk-check">
+
+          <label>Token</label>
+          <input name="token" placeholder="BTC" required>
+
+          <label>Valor que pretende investir (US$)</label>
+          <input name="investimento" type="number" step="0.01" required>
+
+          <label>Percentual da carteira (%)</label>
+          <input name="percentual" type="number" step="0.1" required>
+
+          <button type="submit">
+            Analisar por US$0,01
+          </button>
+
+        </form>
+      </div>
+    </body>
+    </html>
+  `);
+});
+
 app.use(
   paymentMiddleware(
     routes,
@@ -260,158 +321,6 @@ app.get("/api/bitcoin-summary", async (req, res) => {
   }
 });
 
-app.get("/api/risk-check", (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Risk Check</title>
 
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          background: #0f1115;
-          color: white;
-          margin: 0;
-          padding: 40px 20px;
-        }
-
-        .container {
-          max-width: 600px;
-          margin: auto;
-        }
-
-        .card {
-          background: #181b22;
-          border: 1px solid #2a2f3a;
-          border-radius: 16px;
-          padding: 30px;
-        }
-
-        input {
-          width: 100%;
-          box-sizing: border-box;
-          padding: 12px;
-          margin: 8px 0 18px;
-          border-radius: 8px;
-          border: 1px solid #333;
-          background: #0f1115;
-          color: white;
-        }
-
-        button {
-          width: 100%;
-          padding: 12px;
-          border: 0;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: bold;
-        }
-
-        label {
-          color: #bbb;
-        }
-
-        #resultado {
-          display: none;
-          margin-top: 30px;
-          border-top: 1px solid #333;
-          padding-top: 20px;
-        }
-
-        .nivel {
-          font-size: 28px;
-          font-weight: bold;
-        }
-
-        a {
-          color: white;
-        }
-      </style>
-    </head>
-
-    <body>
-      <div class="container">
-        <div class="card">
-
-          <h1>Risk Check</h1>
-
-          <p>Informe os dados da posição:</p>
-
-          <form id="riskForm">
-
-            <label>Token</label>
-            <input id="token" type="text" placeholder="Ex: BTC" required>
-
-            <label>Valor que pretende investir (US$)</label>
-            <input id="investimento" type="number" min="0.01" step="0.01" required>
-
-            <label>Quanto representa da sua carteira (%)</label>
-            <input id="percentual" type="number" min="0.1" max="100" step="0.1" required>
-
-            <button type="submit">Analisar risco</button>
-
-          </form>
-
-          <div id="resultado">
-            <h2>Resultado</h2>
-
-            <p>Token: <strong id="resultadoToken"></strong></p>
-            <p>Investimento: <strong id="resultadoValor"></strong></p>
-            <p>Nível de risco:</p>
-
-            <div class="nivel" id="nivel"></div>
-
-            <p id="mensagem"></p>
-          </div>
-
-          <p><a href="/">← Voltar</a></p>
-
-        </div>
-      </div>
-
-      <script>
-        document.getElementById("riskForm").addEventListener("submit", function(event) {
-          event.preventDefault();
-
-          const token = document.getElementById("token").value;
-          const investimento = Number(document.getElementById("investimento").value);
-          const percentual = Number(document.getElementById("percentual").value);
-
-          let nivel = "Baixo";
-          let mensagem =
-            "O tamanho da posição está relativamente controlado em relação à sua carteira.";
-
-          if (percentual > 10 && percentual <= 25) {
-            nivel = "Médio";
-            mensagem =
-              "A posição já representa uma parcela relevante da carteira.";
-          }
-
-          if (percentual > 25) {
-            nivel = "Alto";
-            mensagem =
-              "A posição representa uma parcela muito grande da carteira e pode causar impacto significativo em caso de queda.";
-          }
-
-          document.getElementById("resultadoToken").textContent =
-            token.toUpperCase();
-
-          document.getElementById("resultadoValor").textContent =
-            "US$ " + investimento.toLocaleString("pt-BR");
-
-          document.getElementById("nivel").textContent = nivel;
-          document.getElementById("mensagem").textContent = mensagem;
-
-          document.getElementById("resultado").style.display = "block";
-        });
-      </script>
-
-    </body>
-    </html>
-  `);
-});
 
 export default app;
