@@ -140,53 +140,100 @@ app.get("/risk-check-form", (req, res) => {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Risk Check</title>
+
       <style>
         body {
           font-family: Arial, sans-serif;
           background: #0f1115;
           color: white;
+          margin: 0;
           padding: 40px 20px;
         }
+
         .card {
           max-width: 550px;
           margin: auto;
           background: #181b22;
-          padding: 30px;
+          border: 1px solid #2a2f3a;
           border-radius: 16px;
+          padding: 30px;
         }
+
         input {
           width: 100%;
           box-sizing: border-box;
           padding: 12px;
           margin: 8px 0 18px;
+          border-radius: 8px;
+          border: 1px solid #333;
+          background: #0f1115;
+          color: white;
         }
+
         button {
           width: 100%;
           padding: 12px;
+          border: 0;
+          border-radius: 8px;
           font-weight: bold;
+          cursor: pointer;
+        }
+
+        label {
+          color: #bbb;
+        }
+
+        a {
+          color: white;
         }
       </style>
     </head>
+
     <body>
       <div class="card">
         <h1>Risk Check</h1>
 
+        <p>Preencha os dados antes de pagar pela análise.</p>
+
         <form method="GET" action="/api/risk-check">
 
           <label>Token</label>
-          <input name="token" placeholder="BTC" required>
+          <input
+            name="token"
+            placeholder="Ex: BTC"
+            required
+          >
 
           <label>Valor que pretende investir (US$)</label>
-          <input name="investimento" type="number" step="0.01" required>
+          <input
+            name="investimento"
+            type="number"
+            min="0.01"
+            step="0.01"
+            placeholder="Ex: 500"
+            required
+          >
 
-          <label>Percentual da carteira (%)</label>
-          <input name="percentual" type="number" step="0.1" required>
+          <label>Quanto representa da sua carteira (%)</label>
+          <input
+            name="percentual"
+            type="number"
+            min="0.1"
+            max="100"
+            step="0.1"
+            placeholder="Ex: 10"
+            required
+          >
 
           <button type="submit">
             Analisar por US$0,01
           </button>
 
         </form>
+
+        <p>
+          <a href="/">← Voltar</a>
+        </p>
       </div>
     </body>
     </html>
@@ -321,6 +368,102 @@ app.get("/api/bitcoin-summary", async (req, res) => {
   }
 });
 
+app.get("/api/risk-check", (req, res) => {
+  const token = req.query.token || "N/A";
+  const investimento = Number(req.query.investimento || 0);
+  const percentual = Number(req.query.percentual || 0);
 
+  let nivel = "Baixo";
+  let mensagem =
+    "O tamanho da posição está relativamente controlado em relação à sua carteira.";
+
+  if (percentual > 10 && percentual <= 25) {
+    nivel = "Médio";
+    mensagem =
+      "A posição já representa uma parcela relevante da carteira. Avalie bem a volatilidade do ativo.";
+  }
+
+  if (percentual > 25) {
+    nivel = "Alto";
+    mensagem =
+      "A posição representa uma parcela grande da carteira e pode causar impacto significativo em caso de queda.";
+  }
+
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Resultado do Risk Check</title>
+
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #0f1115;
+          color: white;
+          margin: 0;
+          padding: 40px 20px;
+        }
+
+        .card {
+          max-width: 550px;
+          margin: auto;
+          background: #181b22;
+          border: 1px solid #2a2f3a;
+          border-radius: 16px;
+          padding: 30px;
+        }
+
+        .label {
+          color: #aaa;
+          margin-top: 20px;
+        }
+
+        .value {
+          font-size: 26px;
+          font-weight: bold;
+        }
+
+        a {
+          color: white;
+        }
+      </style>
+    </head>
+
+    <body>
+      <div class="card">
+
+        <h1>Resultado do Risk Check</h1>
+
+        <div class="label">Token</div>
+        <div class="value">${token.toUpperCase()}</div>
+
+        <div class="label">Investimento</div>
+        <div class="value">
+          US$ ${investimento.toLocaleString("pt-BR")}
+        </div>
+
+        <div class="label">Peso na carteira</div>
+        <div class="value">${percentual}%</div>
+
+        <div class="label">Nível de risco</div>
+        <div class="value">${nivel}</div>
+
+        <p>${mensagem}</p>
+
+        <p>
+          <a href="/risk-check-form">← Fazer outra análise</a>
+        </p>
+
+        <p>
+          <a href="/">← Voltar ao início</a>
+        </p>
+
+      </div>
+    </body>
+    </html>
+  `);
+});
 
 export default app;
