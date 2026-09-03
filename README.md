@@ -260,6 +260,8 @@ sumario-cripto-base/
 ├── x402-api/
 │   ├── api/
 │   │   └── index.js
+│   ├── public/
+│   │   └── index.html
 │   ├── package.json
 │   ├── package-lock.json
 │   └── vercel.json
